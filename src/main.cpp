@@ -9,17 +9,6 @@
 #include <iostream>
 
 int main() {
-    /* 先執行文字版遊戲
-    std::cout << "歡迎來到黑白棋 (文字版)!" << std::endl;
-    system("pause");*/
-
-    // 文字版遊戲邏輯（略）：請確保該部分已正確實作
-
-    // 例如：假設 Othello 類別已定義且運作正常
-    // Othello game;
-    // game.play();
-
-    // 新增：執行 SFML 版本
     sf::VideoMode videoMode(800, 600);
     sf::RenderWindow window(videoMode, "Reversi", sf::Style::Titlebar | sf::Style::Close);
     window.setFramerateLimit(60);
