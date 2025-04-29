@@ -9,8 +9,6 @@
 #include <iostream>
 #include <vector>
 
-// 注意：原本重複定義的 enum class Player 已移除
-
 int main() {
     /* 先執行文字版遊戲
     std::cout << "歡迎來到黑白棋 (文字版)!" << std::endl;
@@ -24,17 +22,18 @@ int main() {
 
     // 新增：執行 SFML 版本
     sf::VideoMode videoMode(800, 600);
-    sf::RenderWindow window(videoMode, "Othello", sf::Style::Titlebar | sf::Style::Close);
+    sf::RenderWindow window(videoMode, "Reversi", sf::Style::Titlebar | sf::Style::Close);
     window.setFramerateLimit(60);
 
     // 載入字型 (請確認字型檔案路徑是否正確，例如 "assets/arial.ttf")
     sf::Font font;
-    if (!font.loadFromFile("assets/font.ttf")) {
-        std::cerr << "無法載入字型檔 assets/font.ttf" << std::endl;
+    if (!font.loadFromFile("assets/微軟正黑體.ttf")) {
+        std::cerr << "無法載入字型檔 assets/arial.ttf" << std::endl;
         return -1;
     }
 
-    // 以 StartScene 作為起始場景
+    // 改成從 StartScene 進入，StartScene 中會提供兩個按鈕讓玩家選擇 AI 對手或線上對戰，
+    // 當玩家選擇後會回傳使用三個引數的新 GameScene。
     std::shared_ptr<Scene> currentScene = std::make_shared<StartScene>(font, window.getSize());
 
     sf::Clock clock;
@@ -42,8 +41,16 @@ int main() {
         sf::Time delta = clock.restart();
         sf::Event event;
         while (window.pollEvent(event)) {
+            // 點選視窗右上角 X 按鈕關閉視窗
             if (event.type == sf::Event::Closed)
                 window.close();
+
+            // 當按下 Home 鍵時回到起始畫面
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Home) {
+                currentScene = std::make_shared<StartScene>(font, window.getSize());
+                continue;
+            }
+
             currentScene->handleEvent(event);
         }
         if (auto nextScene = currentScene->update(delta)) {
