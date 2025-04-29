@@ -3,11 +3,10 @@
 #include <iostream>
 #include <filesystem>
 
-StartScene::StartScene(const sf::Font& font, const sf::Vector2u& windowSize)
+StartScene::StartScene(const sf::Font &font, const sf::Vector2u &windowSize)
     : font(font), selectedMode(Mode::NONE)
-    , aiButton(font, u8"AI Opponent")
-    , onlineButton(font, "Online Opponent")
-{
+      , aiButton(font, u8"AI Opponent")
+      , onlineButton(font, "Online Opponent") {
     // 顯示目前工作目錄，確認圖片放置的位置是否正確
     std::cout << "工作目錄: " << std::filesystem::current_path() << std::endl;
 
@@ -17,8 +16,7 @@ StartScene::StartScene(const sf::Font& font, const sf::Vector2u& windowSize)
         // 載入失敗時備用背景為單色
         background.setSize(sf::Vector2f(windowSize));
         background.setFillColor(sf::Color(200, 220, 255));
-    }
-    else {
+    } else {
         backgroundSprite.setTexture(backgroundTexture);
         // 將背景圖片縮放至視窗大小
         sf::Vector2u texSize = backgroundTexture.getSize();
@@ -52,10 +50,8 @@ StartScene::StartScene(const sf::Font& font, const sf::Vector2u& windowSize)
     onlineButton.setPosition(sf::Vector2f(startX + btnSize.x + spacing, posY));
 }
 
-void StartScene::handleEvent(const sf::Event& event)
-{
-    if (event.type == sf::Event::MouseButtonPressed)
-    {
+void StartScene::handleEvent(const sf::Event &event) {
+    if (event.type == sf::Event::MouseButtonPressed) {
         sf::Vector2f mousePos(static_cast<float>(event.mouseButton.x), static_cast<float>(event.mouseButton.y));
         if (aiButton.contains(mousePos))
             selectedMode = Mode::AI;
@@ -64,19 +60,16 @@ void StartScene::handleEvent(const sf::Event& event)
     }
 }
 
-std::shared_ptr<Scene> StartScene::update(sf::Time delta)
-{
+std::shared_ptr<Scene> StartScene::update(sf::Time delta) {
     // 當按下按鈕後，根據按鈕選擇建立新 GameScene
-    if (selectedMode != Mode::NONE)
-    {
+    if (selectedMode != Mode::NONE) {
         bool useAIOpponent = (selectedMode == Mode::AI);
         return std::make_shared<GameScene>(font, sf::Vector2u(800, 600), useAIOpponent);
     }
     return nullptr;
 }
 
-void StartScene::draw(sf::RenderWindow& window)
-{
+void StartScene::draw(sf::RenderWindow &window) {
     // 若背景圖片載入成功則繪製背景圖片，否則使用備用單色背景
     if (backgroundTexture.getSize().x > 0)
         window.draw(backgroundSprite);

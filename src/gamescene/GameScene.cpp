@@ -7,21 +7,20 @@
 #include <iostream>
 
 // 建構式：加入第三個參數 useAIOpponent 並初始化 Home 按鈕
-GameScene::GameScene(const sf::Font& font, const sf::Vector2u& windowSize, bool useAIOpponent)
+GameScene::GameScene(const sf::Font &font, const sf::Vector2u &windowSize, bool useAIOpponent)
     : font(font),
-    remainingTimeBlack(300.f),
-    remainingTimeWhite(300.f),
-    currentPlayer(Player::BLACK),
-    previewRow(-1),
-    previewCol(-1),
-    isActive(true),
-    showPass(false),
-    passActive(false),
-    lastMoveRow(-1),
-    lastMoveCol(-1),
-    useAIOpponent(useAIOpponent),
-    returnHome(false)
-{
+      remainingTimeBlack(300.f),
+      remainingTimeWhite(300.f),
+      currentPlayer(Player::BLACK),
+      previewRow(-1),
+      previewCol(-1),
+      isActive(true),
+      showPass(false),
+      passActive(false),
+      lastMoveRow(-1),
+      lastMoveCol(-1),
+      useAIOpponent(useAIOpponent),
+      returnHome(false) {
     background.setSize(sf::Vector2f(windowSize));
     background.setFillColor(sf::Color(173, 176, 168));
 
@@ -74,24 +73,24 @@ GameScene::GameScene(const sf::Font& font, const sf::Vector2u& windowSize, bool 
     homeButton.setTextColor(sf::Color::White);
 }
 
-std::vector<std::pair<int, int>> GameScene::getFlippableStones(int row, int col, Player player) const {
-    std::vector<std::pair<int, int>> totalFlips;
+std::vector<std::pair<int, int> > GameScene::getFlippableStones(int row, int col, Player player) const {
+    std::vector<std::pair<int, int> > totalFlips;
     if (row < 0 || row >= boardSize || col < 0 || col >= boardSize)
         return totalFlips;
     if (board[row][col] != Player::NONE)
         return totalFlips;
 
     // 八個方向
-    std::vector<std::pair<int, int>> directions = {
+    std::vector<std::pair<int, int> > directions = {
         {-1, -1}, {-1, 0}, {-1, 1},
-        {0, -1},           {0, 1},
-        {1, -1},  {1, 0},  {1, 1}
+        {0, -1}, {0, 1},
+        {1, -1}, {1, 0}, {1, 1}
     };
 
-    for (auto& dir : directions) {
+    for (auto &dir: directions) {
         int dx = dir.first, dy = dir.second;
         int x = row + dx, y = col + dy;
-        std::vector<std::pair<int, int>> flipList;
+        std::vector<std::pair<int, int> > flipList;
 
         if (x < 0 || x >= boardSize || y < 0 || y >= boardSize)
             continue;
@@ -105,7 +104,7 @@ std::vector<std::pair<int, int>> GameScene::getFlippableStones(int row, int col,
             }
             if (board[x][y] == player)
                 break;
-            flipList.push_back({ x, y });
+            flipList.push_back({x, y});
             x += dx;
             y += dy;
         }
@@ -131,11 +130,11 @@ bool GameScene::hasLegalMove(Player player) const {
     return false;
 }
 
-void GameScene::handleEvent(const sf::Event& event) {
+void GameScene::handleEvent(const sf::Event &event) {
     // 檢查是否按下 Home 按鈕
     if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
         sf::Vector2f mousePos(static_cast<float>(event.mouseButton.x),
-            static_cast<float>(event.mouseButton.y));
+                              static_cast<float>(event.mouseButton.y));
         if (homeButton.contains(mousePos)) {
             returnHome = true;
         }
@@ -147,7 +146,7 @@ void GameScene::handleEvent(const sf::Event& event) {
     // 處理滑鼠移動更新預覽棋步
     if (event.type == sf::Event::MouseMoved) {
         sf::Vector2f mousePos(static_cast<float>(event.mouseMove.x),
-            static_cast<float>(event.mouseMove.y));
+                              static_cast<float>(event.mouseMove.y));
         if (mousePos.x >= 10 && mousePos.x <= (10 + boardSize * cellSize) &&
             mousePos.y >= 10 && mousePos.y <= (10 + boardSize * cellSize)) {
             int j = static_cast<int>((mousePos.x - 10) / cellSize);
@@ -159,21 +158,18 @@ void GameScene::handleEvent(const sf::Event& event) {
                         previewRow = i;
                         previewCol = j;
                         previewFlips = flips;
-                    }
-                    else {
+                    } else {
                         previewRow = -1;
                         previewCol = -1;
                         previewFlips.clear();
                     }
-                }
-                else {
+                } else {
                     previewRow = -1;
                     previewCol = -1;
                     previewFlips.clear();
                 }
             }
-        }
-        else {
+        } else {
             previewRow = -1;
             previewCol = -1;
             previewFlips.clear();
@@ -185,7 +181,7 @@ void GameScene::handleEvent(const sf::Event& event) {
         if (useAIOpponent && currentPlayer == Player::WHITE)
             return;
         sf::Vector2f mousePos(static_cast<float>(event.mouseButton.x),
-            static_cast<float>(event.mouseButton.y));
+                              static_cast<float>(event.mouseButton.y));
         if (mousePos.x >= 10 && mousePos.x <= (10 + boardSize * cellSize) &&
             mousePos.y >= 10 && mousePos.y <= (10 + boardSize * cellSize)) {
             int j = static_cast<int>((mousePos.x - 10) / cellSize);
@@ -201,7 +197,7 @@ void GameScene::handleEvent(const sf::Event& event) {
                         board[i][j] = currentPlayer;
                         lastMoveRow = i;
                         lastMoveCol = j;
-                        for (auto& pos : flips) {
+                        for (auto &pos: flips) {
                             board[pos.first][pos.second] = currentPlayer;
                         }
                         switchPlayer();
@@ -223,14 +219,14 @@ void GameScene::handleEvent(const sf::Event& event) {
 
 std::shared_ptr<Scene> GameScene::update(sf::Time delta) {
     // 若按下 Home 按鈕，返回 StartScene (不保留原棋局)
-    if (returnHome){
+    if (returnHome) {
         return std::make_shared<StartScene>(
             font,
             sf::Vector2u(
                 static_cast<unsigned int>(background.getSize().x),
                 static_cast<unsigned int>(background.getSize().y)
             )
-            );
+        );
     }
 
     if (passActive) {
@@ -240,8 +236,7 @@ std::shared_ptr<Scene> GameScene::update(sf::Time delta) {
             showPass = false;
             passActive = false;
         }
-    }
-    else {
+    } else {
         // 更新倒數計時
         if (currentPlayer == Player::BLACK) {
             remainingTimeBlack -= delta.asSeconds();
@@ -249,20 +244,20 @@ std::shared_ptr<Scene> GameScene::update(sf::Time delta) {
                 remainingTimeBlack = 0;
                 isActive = false;
                 return std::make_shared<WinScene>(font,
-                    sf::Vector2u(static_cast<unsigned int>(background.getSize().x),
-                        static_cast<unsigned int>(background.getSize().y)),
-                    "Time elapsed, White wins!");
+                                                  sf::Vector2u(static_cast<unsigned int>(background.getSize().x),
+                                                               static_cast<unsigned int>(background.getSize().y)),
+                                                  "Time elapsed, White wins!");
             }
-        }
-        else { // 輪到白棋
+        } else {
+            // 輪到白棋
             remainingTimeWhite -= delta.asSeconds();
             if (remainingTimeWhite <= 0) {
                 remainingTimeWhite = 0;
                 isActive = false;
                 return std::make_shared<WinScene>(font,
-                    sf::Vector2u(static_cast<unsigned int>(background.getSize().x),
-                        static_cast<unsigned int>(background.getSize().y)),
-                    "Time elapsed, Black wins!");
+                                                  sf::Vector2u(static_cast<unsigned int>(background.getSize().x),
+                                                               static_cast<unsigned int>(background.getSize().y)),
+                                                  "Time elapsed, Black wins!");
             }
         }
     }
@@ -271,7 +266,7 @@ std::shared_ptr<Scene> GameScene::update(sf::Time delta) {
     textWhiteTimer.setString("White Timer: " + std::to_string(static_cast<int>(remainingTimeWhite)) + "s");
 
     if (useAIOpponent && currentPlayer == Player::WHITE) {
-        std::vector<std::tuple<int, int, std::vector<std::pair<int, int>>>> aiMoves;
+        std::vector<std::tuple<int, int, std::vector<std::pair<int, int> > > > aiMoves;
         for (int i = 0; i < boardSize; i++) {
             for (int j = 0; j < boardSize; j++) {
                 if (board[i][j] == Player::NONE) {
@@ -287,19 +282,18 @@ std::shared_ptr<Scene> GameScene::update(sf::Time delta) {
             std::uniform_int_distribution<> dis(0, aiMoves.size() - 1);
             int chosen = dis(gen);
             int r, c;
-            std::vector<std::pair<int, int>> chosenFlips;
+            std::vector<std::pair<int, int> > chosenFlips;
             std::tie(r, c, chosenFlips) = aiMoves[chosen];
             board[r][c] = currentPlayer;
             lastMoveRow = r;
             lastMoveCol = c;
-            for (auto& pos : chosenFlips)
+            for (auto &pos: chosenFlips)
                 board[pos.first][pos.second] = currentPlayer;
             switchPlayer();
             previewRow = -1;
             previewCol = -1;
             previewFlips.clear();
-        }
-        else {
+        } else {
             Player opponent = (currentPlayer == Player::BLACK) ? Player::WHITE : Player::BLACK;
             if (hasLegalMove(opponent)) {
                 if (!passActive) {
@@ -309,8 +303,7 @@ std::shared_ptr<Scene> GameScene::update(sf::Time delta) {
                     switchPlayer();
                 }
                 return nullptr;
-            }
-            else {
+            } else {
                 int countBlack = 0, countWhite = 0;
                 for (int i = 0; i < boardSize; i++) {
                     for (int j = 0; j < boardSize; j++) {
@@ -329,18 +322,16 @@ std::shared_ptr<Scene> GameScene::update(sf::Time delta) {
                     winner = "Draw!";
                 isActive = false;
                 return std::make_shared<WinScene>(font,
-                    sf::Vector2u(static_cast<unsigned int>(background.getSize().x),
-                        static_cast<unsigned int>(background.getSize().y)),
-                    winner);
+                                                  sf::Vector2u(static_cast<unsigned int>(background.getSize().x),
+                                                               static_cast<unsigned int>(background.getSize().y)),
+                                                  winner);
             }
         }
-    }
-    else {
+    } else {
         if (hasLegalMove(currentPlayer)) {
             showPass = false;
             passActive = false;
-        }
-        else {
+        } else {
             Player opponent = (currentPlayer == Player::BLACK) ? Player::WHITE : Player::BLACK;
             if (hasLegalMove(opponent)) {
                 if (!passActive) {
@@ -350,8 +341,7 @@ std::shared_ptr<Scene> GameScene::update(sf::Time delta) {
                     switchPlayer();
                 }
                 return nullptr;
-            }
-            else {
+            } else {
                 int countBlack = 0, countWhite = 0;
                 for (int i = 0; i < boardSize; i++) {
                     for (int j = 0; j < boardSize; j++) {
@@ -370,9 +360,9 @@ std::shared_ptr<Scene> GameScene::update(sf::Time delta) {
                     winner = "Draw!";
                 isActive = false;
                 return std::make_shared<WinScene>(font,
-                    sf::Vector2u(static_cast<unsigned int>(background.getSize().x),
-                        static_cast<unsigned int>(background.getSize().y)),
-                    winner);
+                                                  sf::Vector2u(static_cast<unsigned int>(background.getSize().x),
+                                                               static_cast<unsigned int>(background.getSize().y)),
+                                                  winner);
             }
         }
     }
@@ -380,7 +370,7 @@ std::shared_ptr<Scene> GameScene::update(sf::Time delta) {
     return nullptr;
 }
 
-void GameScene::draw(sf::RenderWindow& window) {
+void GameScene::draw(sf::RenderWindow &window) {
     window.draw(background);
     for (int i = 0; i < boardSize; i++) {
         for (int j = 0; j < boardSize; j++) {
@@ -443,7 +433,7 @@ void GameScene::draw(sf::RenderWindow& window) {
             previewPiece.setFillColor(sf::Color(255, 255, 255, 200));
         window.draw(previewPiece);
 
-        for (const auto& flipPos : previewFlips) {
+        for (const auto &flipPos: previewFlips) {
             int i = flipPos.first;
             int j = flipPos.second;
             sf::CircleShape flipPreview(cellSize / 2.f - 4);
