@@ -7,7 +7,6 @@
 #include "button/Button.hpp"
 #include <memory>
 #include <iostream>
-#include <vector>
 
 int main() {
     /* 先執行文字版遊戲
