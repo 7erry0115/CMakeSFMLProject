@@ -6,7 +6,7 @@
 StartScene::StartScene(const sf::Font &font, const sf::Vector2u &windowSize)
     : font(font), selectedMode(Mode::NONE)
       , aiButton(font, u8"AI Opponent")
-      , onlineButton(font, "Online Opponent") {
+      , onlineButton(font, "1 vs 1") {
     // 顯示目前工作目錄，確認圖片放置的位置是否正確
     std::cout << "工作目錄: " << std::filesystem::current_path() << std::endl;
 
